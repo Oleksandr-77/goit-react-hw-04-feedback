@@ -1,42 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Statistics } from './Statistics/Statistics';
 import { FeedbackOptions } from './FeedbackOptions/FeedbackOptions';
 import { Section } from './Section/Section';
 import { Notification } from './Notification/Notification';
 
-class App extends React.Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
+const App = () => {
+    const [good,setGood] = useState(0);
+    const [neutral,setNeutral] = useState(0);
+    const [bad,setBad] = useState(0);
+
+  const countTotalFeedback = () => {
+    return good + neutral + bad;
   };
 
-  countTotalFeedback() {
-    return this.state.good + this.state.neutral + this.state.bad;
-  }
-
-  countPositiveFeedbackPercentage() {
-    const total = this.countTotalFeedback();
+  const countPositiveFeedbackPercentage = () => {
+    const total = countTotalFeedback();
     if (total === 0) {
       return 0;
     }
-    return Math.floor((this.state.good / total) * 100);
-  }
-  handleLeaveFeedback = option => {
-    this.setState(prevState => {
-      return { ...prevState, [option]: prevState[option] + 1 };
-    });
+    return Math.floor((good / total) * 100);
   };
 
-  render() {
-    const { good, bad, neutral } = this.state;
-    const total = this.countTotalFeedback();
+  const handleLeaveFeedback = option => {
+    switch (option) {
+      case 'good':
+        setGood(good + 1);
+        break;
+      case 'neutral':
+        setNeutral(neutral + 1);
+        break;
+      case 'bad':
+        setBad(bad + 1);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const total = countTotalFeedback();
     return (
       <>
         <Section title="Please leave feedback">
           <FeedbackOptions
-            options={Object.keys(this.state)}
-            onLeaveFeedback={this.handleLeaveFeedback}
+            options={Object.keys({ good, neutral, bad })}
+            onLeaveFeedback={handleLeaveFeedback}
           />
         </Section>
         {total === 0 ? (
@@ -48,31 +55,13 @@ class App extends React.Component {
               neutral={neutral}
               bad={bad}
               total={total}
-              positivePercentage={this.countPositiveFeedbackPercentage()}
+              positivePercentage={countPositiveFeedbackPercentage()}
             />
           </Section>
         )}
       </>
     );
-  }
-}
+  };
 
 export { App };
 
-
-// export const App = () => {
-//   return (
-//     <div
-//       style={{
-//         height: '100vh',
-//         display: 'flex',
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//         fontSize: 40,
-//         color: '#010101'
-//       }}
-//     >
-//       React homework template
-//     </div>
-//   );
-// };
